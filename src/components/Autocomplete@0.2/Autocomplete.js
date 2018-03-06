@@ -3,46 +3,39 @@ import withHandlers from './withHandlers';
 import SuggestItems from './SuggestItems';
 import './style.css';
 
-// { value, getItems, onChange }
 class Autocomplete extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      items: [],
-      found: false,
-    };
+  componentDidMount() {
+    document.addEventListener('mousedown', this.handleClickOutside);
   }
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.value !== '') {
-      this.setState({ searchVal: nextProps.value, found: false });
-    }
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
   }
-  onInput = async event => {
-    const { name, value } = event.target;
-    this.setState({ searchVal: value });
-    try {
-      const newItems = await this.props.getItems(value);
-      if (newItems.length > 0) {
-        this.setState(({ items, found }) => ({ items: newItems, found: true }));
-      }
-    } catch (e) {
-      this.setState({ found: false });
+  autocompleteRef = ref => {
+    this.$autocompleteRef = ref;
+  };
+
+  handleClickOutside = event => {
+    if (this.$autocompleteRef.contains(event.target) || this.props.set) {
+      return;
     }
+    this.props.onClickOutside();
   };
 
   render() {
-    const { items, found, searchVal } = this.state;
+    const { items, found, value } = this.props;
+    console.log(items, found, value);
     return (
-      <Fragment>
+      <div ref={this.autocompleteRef} className="autocomplete-box">
         <input
           id="autocomplete"
-          value={searchVal}
+          value={value}
           type="text"
           name="searchVal"
-          onChange={this.onInput}
+          onChange={this.props.onInput}
+          placeholder="Search your crypto"
         />
         {found && <SuggestItems items={items} onItemClick={this.props.onChange} />}
-      </Fragment>
+      </div>
     );
   }
 }

@@ -7,10 +7,12 @@ export default function withHandlers(Component) {
   class WithHandlers extends React.Component {
     state = {
       searchVal: '',
+      items: [],
+      found: false,
+      set: false,
     };
 
     getItems(_searchVal) {
-      // this is undefined here
       _searchVal = _searchVal.toLowerCase();
       return new Promise((resolve, reject) => {
         const searchItems = data.filter(
@@ -26,16 +28,50 @@ export default function withHandlers(Component) {
       });
     }
 
+    onInput = async event => {
+      const { name, value } = event.target;
+      this.setState({ searchVal: value });
+      try {
+        const newItems = await this.getItems(value);
+        if (newItems.length > 0) {
+          this.setState(({ items, found, set }) => ({ items: newItems, found: true, set: false }));
+        }
+      } catch (e) {
+        this.setState({ found: false, set: false });
+      }
+    };
+
+    onClickOutside = () => {
+      this.setState({ searchVal: '', found: false });
+    };
+
     onItemClick = event => {
+      console.log('===> onItemClick **** fires ****');
       const selectedText = event.target.textContent;
-      this.setState(({ searchVal }) => ({ searchVal: selectedText }));
+      this.setState(({ searchVal, found, set }) => ({
+        searchVal: selectedText,
+        found: false,
+        set: true,
+      }));
     };
 
     render() {
       console.log('***** => RENDERING HOC');
-      const { searchVal } = this.state;
-      console.log({ searchVal });
-      return <Component getItems={this.getItems} value={searchVal} onChange={this.onItemClick} />;
+      const { searchVal, items, found, set } = this.state;
+      return (
+        <Component
+          // ref={this.componentRef}
+          inputOnBlur={this.inputOnBlur}
+          items={items}
+          value={searchVal}
+          onInput={this.onInput}
+          onChange={this.onItemClick}
+          items={items}
+          found={found}
+          set={set}
+          onClickOutside={this.onClickOutside}
+        />
+      );
     }
   }
   return WithHandlers;
