@@ -29,10 +29,17 @@ export default function withHandlers(Component) {
     }
 
     onInput = async event => {
+      let abort;
       const { name, value } = event.target;
       this.setState({ searchVal: value });
+      if (typeof abort === 'function') {
+        abort();
+      }
       try {
         const newItems = await this.getItems(value);
+        if (newItems.abort) {
+          abort = newItems.abort;
+        }
         if (newItems.length > 0) {
           this.setState(({ items, found, set }) => ({ items: newItems, found: true, set: false }));
         }
@@ -60,7 +67,6 @@ export default function withHandlers(Component) {
       const { searchVal, items, found, set } = this.state;
       return (
         <Component
-          // ref={this.componentRef}
           inputOnBlur={this.inputOnBlur}
           items={items}
           value={searchVal}
