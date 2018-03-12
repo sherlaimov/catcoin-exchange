@@ -31,8 +31,8 @@ class Widget extends React.Component {
     super(props);
     this.height = 300;
     this.width = 500;
-    this.dots = 10;
-    this.rangeY = 20;
+    this.dots = 20;
+    this.rangeY = 0;
     this.rangeX = this.width / this.dots + 2;
     this.firstPrice = null;
     this.priceArray = [];
@@ -53,8 +53,10 @@ class Widget extends React.Component {
       (i + 1) * this.rangeX,
       this.height,
     ]);
+    // debugger;
+    initial.unshift([0, this.height / 2]);
     initial.unshift([0, this.height]);
-    initial.push([(initial.length - 1) * this.rangeX, this.height]);
+    initial.push([initial.length * this.rangeX, this.height]);
     return initial;
   }
 
@@ -79,33 +81,40 @@ class Widget extends React.Component {
 
       const maxY = Math.max(...this.priceArray);
       const minY = Math.min(...this.priceArray);
-
+      this.rangeY = maxY - minY;
       this.setState(prevState => ({
         currency,
         growth,
         price: parseFloat(price),
         minY,
         maxY,
-        priceDiff: parseFloat((prevState.price - price).toFixed(2)),
+        priceDiff: parseFloat(prevState.price - price),
       }));
 
-      const priceDiff = this.height - Math.round(this.state.priceDiff * 5);
+      const priceDiff = Math.abs(this.state.priceDiff);
+      console.log(priceDiff === 0);
+      let scaledYDot;
+      if (this.rangeY === 0) {
+        scaledYDot = 0;
+      } else {
+        scaledYDot = 150 / this.rangeY * priceDiff;
+      }
+      console.log({ scaledYDot });
+      const heightMinusScaled = 150 - scaledYDot;
       if (this.cnt < 9) {
-        this.dotsArray[this.cnt + 1][1] = priceDiff;
+        this.dotsArray[this.cnt + 2][1] = heightMinusScaled;
         this.cnt += 1;
         this.setState(({ dotsArray }) => ({
           dotsArray: this.dotsArray,
         }));
       } else {
-        // this.dotsArray.shift();
         console.log('Counter =>', this.cnt);
-        // this.dotsArray.push([this.dotsArray[this.cnt][0], priceDiff]);
         const newArr = this.dotsArray.map((dots, i, arr) => {
-          if (i !== 0 && i < arr.length - 2) {
+          if (i > 1 && i < arr.length - 3) {
             dots[1] = arr[i + 1][1];
             return dots;
-          } else if (i === arr.length - 2) {
-            dots[1] = priceDiff;
+          } else if (i === arr.length - 3) {
+            dots[1] = heightMinusScaled;
             return dots;
           } else {
             return dots;
@@ -123,17 +132,19 @@ class Widget extends React.Component {
 
   render() {
     console.log(this.state.dotsArray);
-    const { minY, maxY } = this.state;
-    console.log({ minY, maxY });
-    const firsMinusMinY = Math.abs(this.firstPrice - minY);
-    console.log({ firsMinusMinY });
-    const { dotsArray } = this.state;
-    const viewBox = `0 ${firsMinusMinY} ${this.width} ${this.height}`;
+    const { dotsArray, price, growth } = this.state;
+    const cx = dotsArray.length > 0 ? dotsArray[10][0] : 10;
+    const cy = dotsArray.length > 0 ? dotsArray[10][1] : 10;
+    const viewBox = `0 0 ${this.width} ${this.height}`;
     return (
       <Fragment>
         <div>
           <svg viewBox={viewBox} className="chart">
-            <polygon fill="none" stroke="#0074d9" strokeWidth="1" points={dotsArray} />
+            <text x="0" y="35" fontFamily="Verdana" fontSize="35">
+              {price}
+            </text>
+            <circle cx={cx} cy={cy} r="10" fill="#C9327E" />
+            <polygon fill="steelblue" stroke="#0074d9" strokeWidth="1" points={dotsArray} />
           </svg>
         </div>
         <div>
