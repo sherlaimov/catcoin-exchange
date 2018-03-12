@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import './style.css';
 
 const points = [
   [0, 300],
@@ -13,6 +14,22 @@ const points = [
   [160, 90],
   [180, 120],
   [200, 0],
+];
+
+const testPoints = [
+  [0, 300],
+  [0, 150],
+  [50, 150],
+  [100, 0],
+  [150, 100.96153846152433],
+  [200, 118.1818181818282],
+  [250, 113.63636363635737],
+  [300, 115.90909090909278],
+  [350, 123.41772151899302],
+  [400, 134.659090909068],
+  [450, 138.8011496607638],
+  [500, 150],
+  [500, 300],
 ];
 
 points.map((points, i, arr) => {
@@ -33,7 +50,7 @@ class Widget extends React.Component {
     this.width = 500;
     this.dots = 20;
     this.rangeY = 0;
-    this.rangeX = this.width / this.dots + 2;
+    this.rangeX = this.width / this.dots;
     this.firstPrice = null;
     this.priceArray = [];
     this.dotsArray = this.initializeDotsArray();
@@ -51,12 +68,12 @@ class Widget extends React.Component {
   initializeDotsArray() {
     const initial = Array.from({ length: this.dots }).map((a, i) => [
       (i + 1) * this.rangeX,
-      this.height,
+      this.height / 1.2,
     ]);
     // debugger;
-    initial.unshift([0, this.height / 2]);
+    initial.unshift([0, this.height / 1.2]);
     initial.unshift([0, this.height]);
-    initial.push([initial.length * this.rangeX, this.height]);
+    initial.push([(initial.length - 2) * this.rangeX, this.height]);
     return initial;
   }
 
@@ -82,10 +99,11 @@ class Widget extends React.Component {
       const maxY = Math.max(...this.priceArray);
       const minY = Math.min(...this.priceArray);
       this.rangeY = maxY - minY;
+      // console.log(typeof price);
       this.setState(prevState => ({
         currency,
         growth,
-        price: parseFloat(price),
+        price: parseFloat(price).toFixed(2),
         minY,
         maxY,
         priceDiff: parseFloat(prevState.price - price),
@@ -97,10 +115,10 @@ class Widget extends React.Component {
       if (this.rangeY === 0) {
         scaledYDot = 0;
       } else {
-        scaledYDot = 150 / this.rangeY * priceDiff;
+        scaledYDot = this.height / 1.2 / this.rangeY * priceDiff;
       }
       console.log({ scaledYDot });
-      const heightMinusScaled = 150 - scaledYDot;
+      const heightMinusScaled = this.height / 1.2 - scaledYDot;
       if (this.cnt < 9) {
         this.dotsArray[this.cnt + 2][1] = heightMinusScaled;
         this.cnt += 1;
@@ -109,11 +127,12 @@ class Widget extends React.Component {
         }));
       } else {
         console.log('Counter =>', this.cnt);
+        // shift the Y values a step back and record the incoming price
         const newArr = this.dotsArray.map((dots, i, arr) => {
-          if (i > 1 && i < arr.length - 3) {
+          if (i > 1 && i < arr.length - 2) {
             dots[1] = arr[i + 1][1];
             return dots;
-          } else if (i === arr.length - 3) {
+          } else if (i === arr.length - 2) {
             dots[1] = heightMinusScaled;
             return dots;
           } else {
@@ -131,27 +150,33 @@ class Widget extends React.Component {
   calculatePoints() {}
 
   render() {
-    console.log(this.state.dotsArray);
-    const { dotsArray, price, growth } = this.state;
+    const { dotsArray, price, growth, currency, minY, maxY } = this.state;
+    console.log(dotsArray);
     const cx = dotsArray.length > 0 ? dotsArray[10][0] : 10;
     const cy = dotsArray.length > 0 ? dotsArray[10][1] : 10;
     const viewBox = `0 0 ${this.width} ${this.height}`;
     return (
       <Fragment>
-        <div>
+        <div className="price-widget">
           <svg viewBox={viewBox} className="chart">
-            <text x="0" y="35" fontFamily="Verdana" fontSize="35">
-              {price}
+            <polygon
+              className="chart-polygon"
+              fill="#4F2C73"
+              stroke="#351456"
+              strokeWidth="1"
+              points={dotsArray}
+            />
+            {dotsArray.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="2" fill="#351456" />)}
+            <text x="0" y="35" className="currency">
+              {currency}
             </text>
-            <circle cx={cx} cy={cy} r="10" fill="#C9327E" />
-            <polygon fill="steelblue" stroke="#0074d9" strokeWidth="1" points={dotsArray} />
+            <text x="0" y="75" className="price-growth">
+              <tspan className="price">{price}</tspan>
+              <tspan className="growth">{` (${growth})`}</tspan>
+            </text>
           </svg>
         </div>
-        <div>
-          <svg viewBox={viewBox} className="chart2">
-            <polygon fill="none" stroke="#0074d9" strokeWidth="2" points={points} />
-          </svg>
-        </div>
+        <div />
       </Fragment>
     );
   }

@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900');
+
+.price-widget {
+  background-color: rgba(250, 246, 226, 0.575);
+}
+polygon.chart-polygon {
+  fill: '#4F2C73';
+}
+svg text {
+  font-family: 'Roboto', sans-serif;
+}
+tspan {
+  font-family: 'Roboto', sans-serif;
+}
+.currency {
+  font-size: 30px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  fill: #ccc;
+}
+.price-growth {
+  /* font-family: 'Operator Mono'; */
+  font-family: 'Roboto', sans-serif;
+
+  fill: #ccc;
+}
+.price {
+  /* font-family: 'Operator Mono'; */
+  font-size: 30px;
+}
+.growth {
+  font-size: 20px;
+  /* font-family: 'Operator Mono'; */
+}
