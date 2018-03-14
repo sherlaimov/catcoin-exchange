@@ -54,7 +54,6 @@ class Widget extends React.Component {
     this.firstPrice = null;
     this.priceArray = [];
     this.dotsArray = this.initializeDotsArray();
-    this.cnt = 0;
   }
   state = {
     currency: '',
@@ -70,10 +69,6 @@ class Widget extends React.Component {
       (i + 1) * this.rangeX,
       this.height / 1.2,
     ]);
-    // debugger;
-    initial.unshift([0, this.height / 1.2]);
-    initial.unshift([0, this.height]);
-    initial.push([(initial.length - 2) * this.rangeX, this.height]);
     return initial;
   }
 
@@ -91,93 +86,86 @@ class Widget extends React.Component {
 
       const growth = parseFloat(((price - this.firstPrice) / this.firstPrice * 100).toFixed(2));
 
-      if (this.priceArray.length === 10) {
+      if (this.priceArray.length === this.dots) {
         this.priceArray.shift();
       }
+      const priceDiff =
+        this.priceArray.length > 0 ? this.priceArray[this.priceArray.length - 1] - price : 0;
       this.priceArray.push(price);
 
       const maxY = Math.max(...this.priceArray);
       const minY = Math.min(...this.priceArray);
       this.rangeY = maxY - minY;
-      // console.log(typeof price);
-      this.setState(prevState => ({
+
+      const absPriceDiff = Math.abs(priceDiff);
+
+      let scaledYDot;
+      if (this.rangeY === 0) {
+        scaledYDot = 0;
+      } else {
+        scaledYDot = this.height / 1.2 / this.rangeY * absPriceDiff;
+      }
+      console.log({ scaledYDot });
+      const heightMinusScaled = this.height / 1.2 - scaledYDot;
+
+      // shift the Y values a step back and record the incoming price
+      const newArr = this.dotsArray.map((dots, i, arr) => {
+        if (i < arr.length - 1) {
+          dots[1] = arr[i + 1][1];
+        } else if (i === arr.length - 1) {
+          dots[1] = heightMinusScaled;
+        }
+        return dots;
+      });
+      newArr.unshift([0, this.height / 1.2]);
+      newArr.unshift([0, this.height]);
+      newArr.push([(newArr.length - 2) * this.rangeX, this.height]);
+      this.setState(({ dotsArray }) => ({
         currency,
         growth,
         price: parseFloat(price).toFixed(2),
         minY,
         maxY,
-        priceDiff: parseFloat(prevState.price - price),
+        priceDiff: priceDiff,
+        dotsArray: newArr,
       }));
-
-      const priceDiff = Math.abs(this.state.priceDiff);
-      console.log(priceDiff === 0);
-      let scaledYDot;
-      if (this.rangeY === 0) {
-        scaledYDot = 0;
-      } else {
-        scaledYDot = this.height / 1.2 / this.rangeY * priceDiff;
-      }
-      console.log({ scaledYDot });
-      const heightMinusScaled = this.height / 1.2 - scaledYDot;
-      if (this.cnt < 9) {
-        this.dotsArray[this.cnt + 2][1] = heightMinusScaled;
-        this.cnt += 1;
-        this.setState(({ dotsArray }) => ({
-          dotsArray: this.dotsArray,
-        }));
-      } else {
-        console.log('Counter =>', this.cnt);
-        // shift the Y values a step back and record the incoming price
-        const newArr = this.dotsArray.map((dots, i, arr) => {
-          if (i > 1 && i < arr.length - 2) {
-            dots[1] = arr[i + 1][1];
-            return dots;
-          } else if (i === arr.length - 2) {
-            dots[1] = heightMinusScaled;
-            return dots;
-          } else {
-            return dots;
-          }
-        });
-        this.setState(({ dotsArray }) => ({
-          dotsArray: newArr,
-        }));
-        // console.log(newArr);
-      }
     };
   }
-
-  calculatePoints() {}
+  flatten(list) {
+    const newList = [...list];
+    return newList.reduce((a, b) => a.concat(Array.isArray(b) ? this.flatten(b) : b), []);
+  }
 
   render() {
-    const { dotsArray, price, growth, currency, minY, maxY } = this.state;
+    const { dotsArray, price, growth, currency, minY, maxY, priceDiff } = this.state;
     console.log(dotsArray);
-    const cx = dotsArray.length > 0 ? dotsArray[10][0] : 10;
-    const cy = dotsArray.length > 0 ? dotsArray[10][1] : 10;
+    const priceColor = priceDiff > 0 ? 'red' : 'green';
+    const flattened = this.flatten(dotsArray);
+    let incomingPriceCoords = [];
+    if (dotsArray.length !== 0) {
+      incomingPriceCoords = dotsArray[dotsArray.length - 2];
+      console.log(incomingPriceCoords);
+    }
+    // console.log({ flattened });
     const viewBox = `0 0 ${this.width} ${this.height}`;
     return (
-      <Fragment>
-        <div className="price-widget">
-          <svg viewBox={viewBox} className="chart">
-            <polygon
-              className="chart-polygon"
-              fill="#4F2C73"
-              stroke="#351456"
-              strokeWidth="1"
-              points={dotsArray}
-            />
-            {dotsArray.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="2" fill="#351456" />)}
-            <text x="0" y="35" className="currency">
-              {currency}
-            </text>
-            <text x="0" y="75" className="price-growth">
-              <tspan className="price">{price}</tspan>
-              <tspan className="growth">{` (${growth})`}</tspan>
-            </text>
-          </svg>
-        </div>
-        <div />
-      </Fragment>
+      <div className="price-widget">
+        <svg viewBox={viewBox} className="chart">
+          <polygon className="chart-polygon" points={flattened} />
+          {dotsArray.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="2" />)}
+          <text x="0" y="35" className="currency">
+            {currency}
+          </text>
+          <text x="0" y="75" className="price-growth">
+            <tspan className={`price ${priceColor}`}>{price}</tspan>
+            <tspan className="growth">{growth ? ` (${growth})` : ''}</tspan>
+          </text>
+          {/* {incomingPriceCoords && (
+            <circle cx={incomingPriceCoords[0] - 10} cy={incomingPriceCoords[1]} r="10" />
+          )} */}
+          {dotsArray.map(([x, y], i) => <line key={i} x1={x} y1={300} x2={x} y2={295} />)}
+        </svg>
+      </div>
     );
   }
 }
