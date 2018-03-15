@@ -19,29 +19,49 @@ svg.chart polygon {
 svg.chart circle {
   fill: #cc5826;
 }
-svg.chart line {
-  stroke: rgb(66, 66, 66);
+svg.chart .grid {
+  stroke: rgb(235, 171, 34);
+  opacity: 0.1;
 }
-svg text {
+svg.chart text {
   font-family: 'Roboto', sans-serif;
-  fill: #ccc;
 }
-
+.min-tick,
+.max-tick {
+  stroke: rgb(51, 51, 51);
+}
+.y-axis {
+  stroke: rgb(51, 51, 51);
+  opacity: 0.5;
+  stroke-width: 0.5;
+}
+text.minY-value,
+text.maxY-value {
+  font-size: 0.5em;
+}
 .currency {
   font-size: 30px;
   font-weight: 700;
   fill: #ff8320;
 }
-.price-growth {
+.current-price-tooltip rect {
+  fill: #cc5826;
+}
+
+.current-price-tooltip text {
+  font-size: 0.6em;
+  fill: #ccc;
 }
 .price {
   font-size: 30px;
 }
 
-.price.red {
+.price.red,
+.growth.red {
   fill: #cf1212;
 }
-.price.green {
+.price.green,
+.growth.green {
   fill: #3ecf12;
 }
 .growth {
