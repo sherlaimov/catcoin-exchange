@@ -13,6 +13,20 @@ const points = [
   [500, 150],
   [500, 300],
 ];
+const testPoints = [
+  [0, 300],
+  [0, 120],
+  [20, 60],
+  [40, 80],
+  [60, 20],
+  [80, 80],
+  [100, 80],
+  [120, 60],
+  [140, 100],
+  [160, 90],
+  [180, 120],
+  [200, 0],
+];
 const basePrice = 9201.1;
 const priceRange = 20;
 const min = basePrice - priceRange;
@@ -25,3 +39,15 @@ const prices = Array.from({ length: 20 }).map(price => ({
   price: generateRandomInteger(min, max),
   currency: 'BTC',
 }));
+
+
+// points.map((points, i, arr) => {
+//   if (i > 0) {
+//     points[0] = i * Math.round(500 / 11);
+//     points[1] = 300 - points[1];
+//   }
+//   if (i === arr.length - 1) {
+//     points[1] = 300;
+//   }
+//   return points;
+// });

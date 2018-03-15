@@ -1,9 +1,5 @@
 import React from 'react';
-
-function flatten(list) {
-  const newList = [...list];
-  return newList.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
-}
+import './style.css';
 
 export default function PriceWidget(props) {
   const {
@@ -18,12 +14,10 @@ export default function PriceWidget(props) {
     priceDiff,
     baseLineFactor,
   } = props;
-  console.log(dotsArray);
   const viewBox = `0 0 ${width} ${height}`;
   const priceColor = priceDiff > 0 ? 'red' : 'green';
   const growthColor = growth > 0 ? 'green' : 'red';
   const baseLine = height / baseLineFactor;
-  // const flattened = flatten(dotsArray);
   let curPriceCoords = [width + 12, 0];
   let priceRectWidth = 28;
   if (dotsArray.length !== 0) {
@@ -33,7 +27,6 @@ export default function PriceWidget(props) {
     }
     priceRectWidth = width / (dotsArray.length - 2) + 5;
   }
-  console.log({ priceRectWidth });
   return (
     <div className="price-widget">
       <svg viewBox={viewBox} className="chart">
@@ -52,27 +45,9 @@ export default function PriceWidget(props) {
         {dotsArray.map(([x, y], i) => (
           <line className="grid" key={i} x1={x} y1={0} x2={x} y2={300} />
         ))}
-        <line
-          className="y-axis"
-          x1={0}
-          y1={0}
-          x2={0}
-          y2={height}
-        />
-        <line
-          className="min-tick"
-          x1={0}
-          y1={baseLine}
-          x2={priceRectWidth / 4}
-          y2={baseLine}
-        />
-        <line
-          className="max-tick"
-          x1="0"
-          y1="1"
-          x2={priceRectWidth / 4}
-          y2="1"
-        />
+        <line className="y-axis" x1={0} y1={0} x2={0} y2={height} />
+        <line className="min-tick" x1={0} y1={baseLine} x2={priceRectWidth / 4} y2={baseLine} />
+        <line className="max-tick" x1="0" y1="1" x2={priceRectWidth / 4} y2="1" />
         <text className="minY-value" x="1" y={baseLine - 8}>
           {minY}
         </text>
