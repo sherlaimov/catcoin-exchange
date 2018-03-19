@@ -1,7 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import withLoading from '../../hocs/withLoading';
 import './style.css';
 
-export default function PriceWidget(props) {
+function PriceWidget(props) {
   const {
     width,
     height,
@@ -12,10 +14,12 @@ export default function PriceWidget(props) {
     minY,
     maxY,
     priceDiff,
-    baseLineFactor,
+    baseLineFactor
   } = props;
   const viewBox = `0 0 ${width} ${height}`;
   const priceColor = priceDiff > 0 ? 'red' : 'green';
+  console.log({ dotsArray });
+  console.log({ priceColor });
   const growthColor = growth > 0 ? 'green' : 'red';
   const baseLine = height / baseLineFactor;
   let curPriceCoords = [width + 12, 0];
@@ -42,9 +46,7 @@ export default function PriceWidget(props) {
           <tspan className={`price ${priceColor}`}>{price}</tspan>
           <tspan className={`growth ${growthColor}`}>{growth ? ` (${growth})` : ''}</tspan>
         </text>
-        {dotsArray.map(([x, y], i) => (
-          <line className="grid" key={i} x1={x} y1={0} x2={x} y2={300} />
-        ))}
+        {dotsArray.map(([x], i) => <line className="grid" key={i} x1={x} y1={0} x2={x} y2={300} />)}
         <line className="y-axis" x1={0} y1={0} x2={0} y2={height} />
         <line className="min-tick" x1={0} y1={baseLine} x2={priceRectWidth / 4} y2={baseLine} />
         <line className="max-tick" x1="0" y1="1" x2={priceRectWidth / 4} y2="1" />
@@ -64,8 +66,8 @@ export default function PriceWidget(props) {
           className="current-price-tooltip"
           transform={`translate(${curPriceCoords[0] - priceRectWidth}, ${curPriceCoords[1] - 6})`}
         >
-          <rect width={priceRectWidth} height="12" rx="2" ry="2" />
-          <text x="1" y="9">
+          <rect width={priceRectWidth } height="8" rx="2" ry="2" />
+          <text x="2" y="5.5">
             {price}
           </text>
         </g>
@@ -73,3 +75,17 @@ export default function PriceWidget(props) {
     </div>
   );
 }
+
+PriceWidget.propTypes = {
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  dotsArray: PropTypes.array.isRequired,
+  price: PropTypes.number.isRequired,
+  growth: PropTypes.number.isRequired,
+  currency: PropTypes.string.isRequired,
+  minY: PropTypes.number.isRequired,
+  maxY: PropTypes.number.isRequired,
+  priceDiff: PropTypes.number.isRequired,
+  baseLineFactor: PropTypes.number.isRequired
+};
+export default withLoading(PriceWidget);

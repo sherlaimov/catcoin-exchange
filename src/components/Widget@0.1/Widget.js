@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PriceWidget from './PriceWidget';
 
 class Widget extends React.Component {
@@ -6,27 +6,27 @@ class Widget extends React.Component {
     super(props);
     this.height = 300;
     this.width = 500;
-    this.dots = 20;
+    this.dots = 40;
     this.rangeY = 0;
     this.rangeX = this.width / this.dots;
     this.firstPrice = null;
     this.priceArray = [];
     this.baseLineFactor = 1.2;
     this.dotsArray = this.initializeDotsArray();
+    this.state = {
+      currency: '',
+      growth: null,
+      price: null,
+      minY: null,
+      maxY: null,
+      dotsArray: []
+    };
   }
-  state = {
-    currency: '',
-    growth: null,
-    price: null,
-    minY: null,
-    maxY: null,
-    dotsArray: [],
-  };
 
   initializeDotsArray() {
     const initial = Array.from({ length: this.dots }).map((a, i) => [
       (i + 1) * this.rangeX,
-      this.height / this.baseLineFactor,
+      this.height / this.baseLineFactor
     ]);
     return initial;
   }
@@ -39,6 +39,7 @@ class Widget extends React.Component {
     };
     ws.onmessage = e => {
       const { price, currency } = JSON.parse(e.data);
+      console.log(typeof price);
       this.calculateWidgetData({ price, currency });
     };
   }
@@ -83,15 +84,16 @@ class Widget extends React.Component {
     newArr.unshift([0, this.height / this.baseLineFactor]);
     newArr.unshift([0, this.height]);
     newArr.push([(newArr.length - 2) * this.rangeX, this.height]);
-    this.setState(({ dotsArray }) => ({
+
+    this.setState({
       currency,
       growth,
       price: parseFloat(price).toFixed(2),
       minY,
       maxY,
-      priceDiff: priceDiff,
-      dotsArray: newArr,
-    }));
+      priceDiff,
+      dotsArray: newArr
+    });
   }
 
   render() {
