@@ -1,3 +1,5 @@
 import React from 'react';
 import Autocomplete from './Autocomplete';
-export default Autocomplete;
+import withHandlers from './withHandlers';
+
+export default withHandlers(Autocomplete);

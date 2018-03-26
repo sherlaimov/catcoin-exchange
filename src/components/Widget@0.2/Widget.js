@@ -1,12 +1,13 @@
 import React from 'react';
 import PriceWidget from './PriceWidget';
+import PropTypes from 'prop-types';
 
 class Widget extends React.Component {
   constructor(props) {
     super(props);
     this.height = 300;
     this.width = 500;
-    this.dots = 40;
+    this.dots = 30;
     this.rangeY = 0;
     this.rangeX = this.width / this.dots;
     this.firstPrice = null;
@@ -19,10 +20,14 @@ class Widget extends React.Component {
       price: null,
       minY: null,
       maxY: null,
-      dotsArray: []
+      dotsArray: [],
+      priceDiff: null
     };
   }
-
+  static propTypes = {
+    price: PropTypes.number.isRequired,
+    currency: PropTypes.string.isRequired
+  };
   initializeDotsArray() {
     const initial = Array.from({ length: this.dots }).map((a, i) => [
       (i + 1) * this.rangeX,
@@ -31,20 +36,16 @@ class Widget extends React.Component {
     return initial;
   }
 
-  componentDidMount() {
-    const ws = new WebSocket('ws://coins-stream.demo.javascript.ninja');
-    ws.onopen = () => {
-      console.log('subscribe');
-      ws.send(JSON.stringify({ type: 'subscribe', currency: 'BTC' }));
-    };
-    ws.onmessage = e => {
-      const { price, currency } = JSON.parse(e.data);
-      console.log(typeof price);
+  componentWillReceiveProps({ price, currency }) {
+    if (price !== null && price !== undefined && currency !== '') {
       this.calculateWidgetData({ price, currency });
-    };
+    }
   }
 
   calculateWidgetData({ price, currency }) {
+    if (price < 0) {
+      return;
+    }
     if (this.firstPrice === null) {
       this.firstPrice = price;
     }
@@ -88,7 +89,7 @@ class Widget extends React.Component {
     this.setState({
       currency,
       growth,
-      price: parseFloat(price).toFixed(2),
+      price: parseFloat(price.toFixed(2)),
       minY,
       maxY,
       priceDiff,

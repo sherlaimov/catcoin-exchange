@@ -2,14 +2,13 @@ import React from 'react';
 import getDisplayName from '../../helpers/getDisplayName';
 import data from '../../stubs/tickers';
 
-// https://api.coinmarketcap.com/v1/ticker/?limit=10
 export default function withHandlers(Component) {
   class WithHandlers extends React.Component {
     state = {
       searchVal: '',
       items: [],
       found: false,
-      set: false,
+      set: false
     };
 
     getItems(_searchVal) {
@@ -53,21 +52,18 @@ export default function withHandlers(Component) {
     };
 
     onItemClick = event => {
-      console.log('===> onItemClick **** fires ****');
       const selectedText = event.target.textContent;
       this.setState(({ searchVal, found, set }) => ({
         searchVal: selectedText,
         found: false,
-        set: true,
+        set: true
       }));
     };
 
     render() {
-      console.log('***** => RENDERING HOC');
       const { searchVal, items, found, set } = this.state;
       return (
         <Component
-          inputOnBlur={this.inputOnBlur}
           items={items}
           value={searchVal}
           onInput={this.onInput}

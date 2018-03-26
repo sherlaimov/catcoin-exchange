@@ -18,8 +18,6 @@ function PriceWidget(props) {
   } = props;
   const viewBox = `0 0 ${width} ${height}`;
   const priceColor = priceDiff > 0 ? 'red' : 'green';
-  console.log({ dotsArray });
-  console.log({ priceColor });
   const growthColor = growth > 0 ? 'green' : 'red';
   const baseLine = height / baseLineFactor;
   let curPriceCoords = [width + 12, 0];
@@ -29,7 +27,7 @@ function PriceWidget(props) {
     if (curPriceCoords[1] < 12) {
       curPriceCoords[1] = 12;
     }
-    priceRectWidth = width / (dotsArray.length - 2) + 5;
+    priceRectWidth = width / (dotsArray.length - 2) + 2;
   }
   return (
     <div className="price-widget">
@@ -66,8 +64,8 @@ function PriceWidget(props) {
           className="current-price-tooltip"
           transform={`translate(${curPriceCoords[0] - priceRectWidth}, ${curPriceCoords[1] - 6})`}
         >
-          <rect width={priceRectWidth } height="8" rx="2" ry="2" />
-          <text x="2" y="5.5">
+          <rect width={priceRectWidth} height="8" rx="2" ry="2" />
+          <text x="4" y="5.5">
             {price}
           </text>
         </g>

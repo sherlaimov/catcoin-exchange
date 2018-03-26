@@ -1,9 +1,15 @@
-import React, { Fragment, Component } from 'react';
-import withHandlers from './withHandlers';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import SuggestItems from './SuggestItems';
 import './style.css';
 
 class Autocomplete extends Component {
+  static propTypes = {
+    value: PropTypes.string.isRequired,
+    onInput: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
+    onClickOutside: PropTypes.func.isRequired
+  };
   componentDidMount() {
     document.addEventListener('mousedown', this.handleClickOutside);
   }
@@ -23,7 +29,6 @@ class Autocomplete extends Component {
 
   render() {
     const { items, found, value } = this.props;
-    console.log(items, found, value);
     return (
       <div ref={this.autocompleteRef} className="autocomplete-box">
         <input
@@ -40,4 +45,4 @@ class Autocomplete extends Component {
   }
 }
 
-export default withHandlers(Autocomplete);
+export default Autocomplete;
