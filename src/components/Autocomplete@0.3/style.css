@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900');
+
+body {
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 0.7em;
+}
+#autocomplete {
+  border: 1px solid silver;
+  outline: none;
+  margin: 0;
+  background: #fff;
+}
+
+#autocomplete-dropdown {
+  border: 1px solid silver;
+  border-top: 0;
+  position: absolute;
+  overflow: auto;
+  max-height: 93px;
+  background: #fff;
+}
+
+#autocomplete,
+#autocomplete-dropdown {
+  width: 200px;
+  box-sizing: border-box;
+}
+
+#autocomplete-dropdown ul {
+  list-style-type: none;
+  padding: 0;
+  margin-right: 1px;
+}
+
+#autocomplete-dropdown li {
+  padding: 4px;
+  margin: 0;
+  color: #000;
+  cursor: pointer;
+}
+
+#autocomplete-dropdown li:nth-child(2n + 1) {
+  background: #f6f6f6;
+}
+
+#autocomlilete-dropdown li:hover {
+  background: #e5e5e5;
+}
