@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900');
+
+svg.chart {
+  background-color: rgba(250, 250, 235, 0.575);
+}
+.price-widget {
+  /* background-color: rgba(250, 246, 226, 0.575); */
+}
+
+/* purple polygon #4f2c73; */
+/* darker purple circle #351456 */
+svg.chart polygon {
+  fill: #ff8320;
+  stroke: #cc5826;
+  stroke-width: 1;
+  fill-opacity: 0.7;
+}
+
+svg.chart circle {
+  fill: #cc5826;
+}
+svg.chart .grid {
+  stroke: rgb(235, 171, 34);
+  opacity: 0.1;
+}
+svg.chart text {
+  font-family: 'Roboto', sans-serif;
+}
+
+svg.loading text {
+  text-anchor: middle;
+}
+.min-tick,
+.max-tick {
+  stroke: #cc5826;
+}
+.axis {
+  stroke: #cc5826;
+  opacity: 0.5;
+  stroke-width: 0.5;
+}
+text.minY-value,
+text.maxY-value {
+  font-size: 0.5em;
+  fill: #cc5826;
+}
+.currency {
+  font-size: 30px;
+  font-weight: 700;
+  fill: #ccc;
+  /* stroke: #cc5826; */
+}
+.current-price-tooltip rect {
+  fill: #cc5826;
+}
+
+.current-price-tooltip text {
+  font-size: 0.3em;
+  fill: rgba(250, 250, 235, 0.575);
+}
+.price {
+  font-size: 30px;
+}
+
+.price.red,
+.growth.red {
+  fill: #cf1212;
+}
+.price.green,
+.growth.green {
+  fill: #3ecf12;
+}
+.growth {
+  font-size: 20px;
+}
